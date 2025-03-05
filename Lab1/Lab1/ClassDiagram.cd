@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Canvas">
+    <Position X="4.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAEAAAAAAAQAQAIGAAAAAQAAAAAAAAAAAAAACAA=</HashCode>
+      <FileName>Canvas.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="figures::Circle">
+    <Position X="10" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAQAAAgAAAAEAAAAAAAAAAgEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Figure.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="figures::Rectangle">
+    <Position X="10" Y="3.5" Width="1.5" />
+    <InheritanceLine Type="IFigure">
+      <InheritanceModifierLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="-0.008" Y="0.008" Height="0.182" Width="0.6" />
+      </InheritanceModifierLabel>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>gAAAAAQAAAAAAAAEAAAAAAAAAAAkAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Figure.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="figures::Triangle">
+    <Position X="10" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgAAAAQAAAAAAAAFAAAAAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Figure.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FileManager">
+    <Position X="1.25" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAQAAAAAAA=</HashCode>
+      <FileName>FileManager.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IFigure">
+    <Position X="7.25" Y="1.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAQAAAAADAAEAAAgAAAAAAAUQAAAAAgAAAAAAEA=</HashCode>
+      <FileName>IFigure.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="InputHandler">
+    <Position X="4.5" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQACABAAAAAAAAAAAAAAAAAAASAAACgAEBAAAABAAA=</HashCode>
+      <FileName>InputHandler.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PaintApplication">
+    <Position X="1.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAACAAAEAAAAAACAAABAAAAQAAAAgAAA=</HashCode>
+      <FileName>PaintApplication.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
