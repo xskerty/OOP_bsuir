@@ -24,4 +24,6 @@ Cancels the last undo command.
 Saves canvas into file.
 # load [file_name]
 Loads canvas from file.
+
+## UML Diagramm
 ![uml](https://github.com/user-attachments/assets/3d548071-f955-4549-aad6-92171b51ce45)
