@@ -5,7 +5,7 @@ Basic UI includes canvas in frame and command line, where user can input command
 ## Functions
 All available functions are listed in this paragraph 
 
-#add [figure_name] [data]
+# add [figure_name] [data]
 add circle [x_position] [y_position] [radius]
 add recrangle [x1_position] [y1_position] [x2_position] [y2_position]
 add triangle [x_position] [y_position] [height] 
