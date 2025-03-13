@@ -8,7 +8,7 @@ All available functions are listed in this paragraph
 # add [figure_name] [data]
 ## add circle [x_position] [y_position] [radius]
 ## add recrangle [x1_position] [y1_position] [x2_position] [y2_position]
-## add triangle [x_position] [y_position] [height] 
+## add triangle [x_position] [y_position] [side1_length] [side2_length] [side3_length] 
 
 # fill [figure_id] 
 Fills figure with provided id.
