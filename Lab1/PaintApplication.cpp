@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "PaintApplication.h"
 
 PaintApplication::PaintApplication()
@@ -5,14 +6,13 @@ PaintApplication::PaintApplication()
 	canvases.push_back(Canvas(60, 237));
 }
 
-void PaintApplication::App()
+
+void PaintApplication::AppForTest(std::vector<std::string> command)
 {
-	
-	while (true) {
-		canvases[currentIndex].repaint();
-		std::cout << std::endl;
-		std::getline(std::cin, input);
-		inputResult = InputHandler(input);
+
+	for (int c = 0; c < command.size(); ++c) {
+
+		inputResult = InputHandler(command[c]);
 
 		if (inputResult.isBad()) continue;
 		if (inputResult.getCommand() == "undo")
@@ -35,16 +35,19 @@ void PaintApplication::App()
 		}
 		else if (inputResult.getCommand() == "load")
 		{
-			canvases.clear();
+			for (int i = 0; i < canvases.size() - currentIndex - 1; ++i)
+			{
+				canvases.pop_back();
+			}
 			canvases.push_back(FileManager::loadFromFile(inputResult.getFilename()));
-			currentIndex=0;
+			currentIndex++;
 		}
 		else if (inputResult.getCommand() == "add")
 		{
 			std::vector<int> args = inputResult.getArgs();
 			if (inputResult.getTypeFigure() == "circle")
 			{
-				if (args.size() != 3 || args[0] < 0 || args[1] < 0 || args[2] < 0) continue;
+				if (args.size() != 3 || args[2] < 0) continue;
 				for (int i = 0; i < canvases.size() - currentIndex - 1; ++i)
 				{
 					canvases.pop_back();
@@ -56,7 +59,7 @@ void PaintApplication::App()
 			}
 			else if (inputResult.getTypeFigure() == "rectangle")
 			{
-				if (args.size() != 4 || args[0] < 0 || args[1] < 0 || args[2] < 0 || args[3] < 0) continue;
+				if (args.size() != 4) continue;
 				for (int i = 0; i < canvases.size() - currentIndex - 1; ++i)
 				{
 					canvases.pop_back();
@@ -68,14 +71,14 @@ void PaintApplication::App()
 			}
 			else if (inputResult.getTypeFigure() == "triangle")
 			{
-				if (args.size() != 5 || args[2] < 0 || args[0] < 0 || args[1] < 0 || args[2] >= args[3] + args[4] || args[3] >= args[2] + args[4] || args[4] >= args[3] + args[2]) continue;
+				if (args.size() != 3 || args[2] < 0) continue;
 				for (int i = 0; i < canvases.size() - currentIndex - 1; ++i)
 				{
 					canvases.pop_back();
 				}
 				canvases.push_back(canvases[currentIndex]);
 				currentIndex++;
-				figures::Triangle* newFigure = new figures::Triangle(args[0], args[1], args[2], args[3], args[4]);
+				figures::Triangle* newFigure = new figures::Triangle(args[0], args[1], args[2]);
 				canvases[currentIndex].addObject(newFigure);
 			}
 		}
@@ -90,7 +93,7 @@ void PaintApplication::App()
 			Canvas canvas(60, 237);
 			for (int i = 0; i < canvases[currentIndex].getObjects().size(); ++i)
 			{
-				std::vector<int> argsf = canvases[currentIndex].getObjects()[i]->getStartValues();
+				std::vector<uint8_t> argsf = canvases[currentIndex].getObjects()[i]->getStartValues();
 				switch (argsf[0])
 				{
 				case 0:
@@ -109,7 +112,7 @@ void PaintApplication::App()
 				}
 				case 2:
 				{
-					figures::Triangle* newFigure = new figures::Triangle(argsf[1], argsf[2], argsf[3], argsf[4], argsf[5]);
+					figures::Triangle* newFigure = new figures::Triangle(argsf[1], argsf[2], argsf[3]);
 					if (canvases[currentIndex].getObjects()[i]->getIsFilled()) newFigure->fill();
 					canvas.addObject(newFigure);
 					break;
@@ -117,9 +120,9 @@ void PaintApplication::App()
 				default:
 					break;
 				}
-				
+
 			}
-			
+
 			canvases.push_back(canvas);
 			currentIndex++;
 			canvases[currentIndex].moveObject(args[0], args[1], args[2]);
@@ -135,7 +138,7 @@ void PaintApplication::App()
 			Canvas canvas = Canvas(60, 237);
 			for (int i = 0; i < canvases[currentIndex].getObjects().size(); ++i)
 			{
-				std::vector<int> argsf = canvases[currentIndex].getObjects()[i]->getStartValues();
+				std::vector<uint8_t> argsf = canvases[currentIndex].getObjects()[i]->getStartValues();
 				switch (argsf[0])
 				{
 				case 0:
@@ -154,7 +157,7 @@ void PaintApplication::App()
 				}
 				case 2:
 				{
-					figures::Triangle* newFigure = new figures::Triangle(argsf[1], argsf[2], argsf[3], argsf[4], argsf[5]);
+					figures::Triangle* newFigure = new figures::Triangle(argsf[1], argsf[2], argsf[3]);
 					if (canvases[currentIndex].getObjects()[i]->getIsFilled()) newFigure->fill();
 					canvas.addObject(newFigure);
 					break;

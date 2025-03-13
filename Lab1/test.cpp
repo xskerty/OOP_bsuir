@@ -30,7 +30,7 @@ TEST(addTest, addTest1) {
 TEST(addTest, addTest2) {
 
     PaintApplication* application = new PaintApplication();
-    std::vector<std::string> test = { "load test1.bin", "add rectangle 80 80 90 90 ", "save test.bin" };
+    std::vector<std::string> test = { "load test1.bin", "add rectangle 80 80 90 90 " "save test.bin" };
     application->AppForTest(test);
 
     EXPECT_EQ(compareBinFiles("test.bin", "test2.bin"), true);

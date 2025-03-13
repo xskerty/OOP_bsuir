@@ -1,8 +1,9 @@
 #include "Figure.h"
+#include <math.h>
 
-figures::Circle::Circle(uint8_t x_pos, uint8_t y_pos, uint8_t radius)
+figures::Circle::Circle(int x_pos, int y_pos, int radius)
 {
-    startValues = {0, x_pos, y_pos, radius, 0};
+    startValues = {0, x_pos, y_pos, radius, 0, 0};
     refreshCoordinates();  
 }
 
@@ -15,10 +16,10 @@ void figures::Circle::refreshCoordinates()
         {
             for (int i = 0; i <= 360; i++)
             {
-                uint8_t x = j * cos(i);
-                uint8_t y = j * sin(i);
+                int x = j * cos(i);
+                int y = j * sin(i);
 
-                coordinates.push_back(std::pair<uint8_t, uint8_t>(x + startValues[1], y + startValues[2]));
+                coordinates.push_back(std::pair<int, int>(x + startValues[1], y + startValues[2]));
             }
         }
     }
@@ -26,26 +27,26 @@ void figures::Circle::refreshCoordinates()
     {
         for (int i = 0; i <= 360; i++)
         {
-            uint8_t x = startValues[3] * cos(i);
-            uint8_t y = startValues[3] * sin(i);
+            int x = startValues[3] * cos(i);
+            int y = startValues[3] * sin(i);
 
-            coordinates.push_back(std::pair<uint8_t, uint8_t>(x + startValues[1], y + startValues[2]));
+            coordinates.push_back(std::pair<int, int>(x + startValues[1], y + startValues[2]));
         }
     }
 }
 
-void figures::Circle::transform(uint8_t x, uint8_t y)
+void figures::Circle::transform(int x, int y)
 {
     startValues[1] += x;
     startValues[2] += y;
     refreshCoordinates();
 }
 
-figures::Rectangle::Rectangle(uint8_t x_pos1, uint8_t y_pos1, uint8_t x_pos2, uint8_t y_pos2)
+figures::Rectangle::Rectangle(int x_pos1, int y_pos1, int x_pos2, int y_pos2)
 {
     if (x_pos1 > x_pos2) std::swap(x_pos1, x_pos2);
     if (y_pos1 > y_pos2) std::swap(y_pos1, y_pos2);
-    startValues = { 1, x_pos1, y_pos1, x_pos2, y_pos2};
+    startValues = { 1, x_pos1, y_pos1, x_pos2, y_pos2, 0};
     refreshCoordinates();
 }
 
@@ -58,7 +59,7 @@ void figures::Rectangle::refreshCoordinates()
         {
             for (int j = startValues[2]; j <= startValues[4]; ++j)
             {
-                coordinates.push_back(std::pair<uint8_t, uint8_t>(i, j));
+                coordinates.push_back(std::pair<int, int>(i, j));
             }
         }
     }
@@ -66,18 +67,18 @@ void figures::Rectangle::refreshCoordinates()
     {
         for (int i = startValues[1]; i <= startValues[3]; ++i)
         {
-            coordinates.push_back(std::pair<uint8_t, uint8_t>(i, startValues[2]));
-            coordinates.push_back(std::pair<uint8_t, uint8_t>(i, startValues[4]));
+            coordinates.push_back(std::pair<int, int>(i, startValues[2]));
+            coordinates.push_back(std::pair<int, int>(i, startValues[4]));
         }
         for (int i = startValues[2]; i <= startValues[4]; ++i)
         {
-            coordinates.push_back(std::pair<uint8_t, uint8_t>(startValues[1], i));
-            coordinates.push_back(std::pair<uint8_t, uint8_t>(startValues[3], i));
+            coordinates.push_back(std::pair<int, int>(startValues[1], i));
+            coordinates.push_back(std::pair<int, int>(startValues[3], i));
         }
     }
 }
 
-void figures::Rectangle::transform(uint8_t x, uint8_t y)
+void figures::Rectangle::transform(int x, int y)
 {
     startValues[1] += x;
     startValues[2] += y;
@@ -86,40 +87,50 @@ void figures::Rectangle::transform(uint8_t x, uint8_t y)
     refreshCoordinates();
 }
 
-figures::Triangle::Triangle(uint8_t x_pos1, uint8_t y_pos1, uint8_t height)
+figures::Triangle::Triangle(int x_pos1, int y_pos1, int side1, int side2, int side3)
 {
-    startValues = { 2, x_pos1, y_pos1, height, 0};
+    startValues = { 2, x_pos1, y_pos1, side1, side2, side3};
     refreshCoordinates();
 }
 
 void figures::Triangle::refreshCoordinates()
 {
     coordinates.clear();
-    if (isFilled)
+
+    std::vector<std::pair<int, int>> vertices(3);
+
+    int a = startValues[3];
+    int b = startValues[4];
+    int c = startValues[5];
+
+    double p = (a + b + c) / 2;
+    double h = 2 * sqrt(p * (p - a) * (p - b) * (p - c)) / c;
+
+    double c1 = sqrt(a * a - h * h);
+    double c2 = c - c1;
+
+
+    for (int i = 0; i < round(h); ++i)
     {
-        for (int i = startValues[1]; i < startValues[1] + startValues[3]; ++i)
+        coordinates.push_back(std::pair<int, int>(startValues[1] + i, startValues[2] - round(c1 * i / h)));
+        coordinates.push_back(std::pair<int, int>(startValues[1] + i, startValues[2] + round(c2 * i / h)));
+
+        if (isFilled)
         {
-            for (int j = startValues[2] - i + startValues[1]; j <= startValues[2] + i - startValues[1]; ++j)
+            for (int j = 0; j <= round(c * i / h); ++j)
             {
-                coordinates.push_back(std::pair<uint8_t, uint8_t>(i, j));
+                coordinates.push_back(std::pair<int, int>(startValues[1] + i, startValues[2] - c1*i/h + j ));
             }
         }
     }
-    else
+
+    for (int i = 0; i < c; ++i)
     {
-        for (int i = startValues[1]; i < startValues[1]+startValues[3]; ++i)
-        {
-            coordinates.push_back(std::pair<uint8_t, uint8_t>(i, startValues[2] + i - startValues[1]));
-            coordinates.push_back(std::pair<uint8_t, uint8_t>(i, startValues[2] - i + startValues[1]));
-        }
-        for (int i = startValues[2] - startValues[3]; i <= startValues[2] + startValues[3]; ++i)
-        {
-            coordinates.push_back(std::pair<uint8_t, uint8_t>(startValues[1]+startValues[3], i));
-        }
+        coordinates.push_back(std::pair<int, int>(startValues[1] + round(h) - 1, startValues[2] - c1 + i));
     }
 }
 
-void figures::Triangle::transform(uint8_t x, uint8_t y)
+void figures::Triangle::transform(int x, int y)
 {
     startValues[1] += x;
     startValues[2] += y;

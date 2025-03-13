@@ -27,7 +27,7 @@ InputHandler::InputHandler(std::string input)
 		command = elems[0];
 		filename = elems[1];
 	}
-	else if (elems.size() > 4 && elems.size() <= 6 && elems[0] == "add")
+	else if (elems.size() > 4 && elems.size() <= 7 && elems[0] == "add")
 	{
 		command = elems[0];
 		typeFigure = elems[1];

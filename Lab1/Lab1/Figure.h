@@ -6,10 +6,10 @@ namespace figures {
     class Circle :public IFigure
     {
     public:
-        Circle(uint8_t x_pos, uint8_t y_pos, uint8_t radius);
+        Circle(int x_pos, int y_pos, int radius);
         ~Circle() = default;
-        inline std::vector<uint8_t> getStartValues() const { return startValues; }
-        void transform(uint8_t, uint8_t) override;
+        inline std::vector<int> getStartValues() const { return startValues; }
+        void transform(int, int) override;
     private:
         void refreshCoordinates() override;      
     };
@@ -17,10 +17,10 @@ namespace figures {
     class Rectangle :public IFigure
     {
     public:
-        Rectangle(uint8_t x_pos1, uint8_t y_pos1, uint8_t x_pos2, uint8_t y_pos2);
+        Rectangle(int x_pos1, int y_pos1, int x_pos2, int y_pos2);
         ~Rectangle() = default;
-        inline std::vector<uint8_t> getStartValues() const { return startValues; }
-        void transform(uint8_t, uint8_t) override;
+        inline std::vector<int> getStartValues() const { return startValues; }
+        void transform(int, int) override;
     private:
         void refreshCoordinates() override;
     };
@@ -28,10 +28,10 @@ namespace figures {
     class Triangle :public IFigure
     {
     public:
-        Triangle(uint8_t x_pos1, uint8_t y_pos1, uint8_t height);
+        Triangle(int x_pos1, int y_pos1,int side1, int side2, int side3);
         ~Triangle() = default;
-        inline std::vector<uint8_t> getStartValues() const { return startValues; }
-        void transform(uint8_t, uint8_t) override;
+        inline std::vector<int> getStartValues() const { return startValues; }
+        void transform(int, int) override;
     private:
         void refreshCoordinates() override;
     };

@@ -9,10 +9,10 @@ class PaintApplication
 {
 public:
 	PaintApplication();
-	void App();
+	void AppForTest(std::vector<std::string> command);
 private:
 	std::vector<Canvas> canvases;
-	int currentIndex = 0;
+	uint8_t currentIndex = 0;
 	std::string input;
 	InputHandler inputResult = InputHandler("");
 };

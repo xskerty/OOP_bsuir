@@ -1,7 +1,7 @@
 #include "Canvas.h"
 #include <iostream>
 
-Canvas::Canvas(uint8_t height, uint8_t width)
+Canvas::Canvas(int height, int width)
 	:height(height), width(width)
 {
 }
@@ -46,21 +46,21 @@ void Canvas::repaint()
 	}
 }
 
-bool Canvas::eraseObject(uint8_t id)
+bool Canvas::eraseObject(int id)
 {
 	if (id < 0 || id >= objects.size())return true;
 	objects.erase(objects.begin() + id);
 	return false;
 }
 
-bool Canvas::fillObject(uint8_t id)
+bool Canvas::fillObject(int id)
 {
 	if (id < 0 || id >= objects.size())return true;
 	objects[id]->fill();
 	return false;
 }
 
-bool Canvas::moveObject(uint8_t id, uint8_t x, uint8_t y)
+bool Canvas::moveObject(int id, int x, int y)
 {
 	if (id < 0 || id >= objects.size())return true;
 	objects[id]->transform(x, y);
