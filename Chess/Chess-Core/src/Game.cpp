@@ -1,4 +1,3 @@
-#include <sstream>
 #include "Game.h"
 #include "Piece.h"
 
@@ -124,7 +123,7 @@ namespace chess {
     }
 
     std::string Game::moveToNotation(const Position& from, const Position& to, PieceType promotion) const {
-        std::ostringstream oss;
+        std::string oss = "";
         const Piece* piece = board.getPiece(to); // Уже перемещена
 
         // Рокировка
@@ -134,7 +133,7 @@ namespace chess {
 
         // Обозначение фигуры (кроме пешки)
         if (piece->getType() != PieceType::PAWN) {
-            oss << pieceTypeToSymbol(piece->getType());
+            oss += pieceTypeToSymbol(piece->getType());
         }
 
         // Исходная позиция (если нужно для однозначности)
@@ -143,27 +142,27 @@ namespace chess {
         // Взятие
         if (board.getPiece(to)) {
             if (piece->getType() == PieceType::PAWN) {
-                oss << from.toChessNotation()[0]; // Буква колонки
+                oss += from.toChessNotation()[0]; // Буква колонки
             }
-            oss << 'x';
+            oss += 'x';
         }
 
         // Целевая позиция
-        oss << to.toChessNotation();
+        oss += to.toChessNotation();
 
         // Превращение пешки
         if (promotion != PieceType::NONE) {
-            oss << '=' << pieceTypeToSymbol(promotion);
+            oss += '=' << pieceTypeToSymbol(promotion);
         }
 
         // Шах и мат
         Board tempBoard(board);
         tempBoard.movePiece(from, to);
         if (tempBoard.isCheck(currentTurn)) {
-            oss << (tempBoard.isCheckmate(currentTurn) ? '#' : '+');
+            oss += (tempBoard.isCheckmate(currentTurn) ? '#' : '+');
         }
 
-        return oss.str();
+        return oss;
     }
 
     void Game::handleGameEnd(GameStatus endStatus) {

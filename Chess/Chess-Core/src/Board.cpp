@@ -96,7 +96,8 @@ namespace chess {
     }
 
     bool Board::isMoveLegal(const Position& from, const Position& to) const {
-        if (!from.isValid() || !to.isValid()) return false;
+        if (!from.isValid() || !to.isValid()||from == to) return false;
+        if (getPiece(to) != nullptr && getPiece(from)->getColor() == getPiece(to)->getColor()) return false;
 
         const Piece* piece = getPiece(from);
         if (!piece) return false;
@@ -193,7 +194,8 @@ namespace chess {
 
     bool Board::wouldBeCheck(const Position& from, const Position& to) const {
         Board tempBoard(*this); // Копируем доску
-        tempBoard.movePiece(from, to); // Делаем ход на копии
+        tempBoard.grid[to.y][to.x] = std::move(tempBoard.grid[from.y][from.x]);
+       // tempBoard.movePiece(from, to); // Делаем ход на копии
         return tempBoard.isCheck(getPiece(from)->getColor());
     }
 
