@@ -20,7 +20,7 @@ namespace chess {
     }
 
     bool Game::makeMove(const Position& from, const Position& to) {
-        if (status != GameStatus::ONGOING) return false;
+        if (status != GameStatus::ONGOING && status != GameStatus::CHECK) return false;
 
         // ѕровер€ем, что ход делает правильный игрок
         Piece* piece = board.getPiece(from);

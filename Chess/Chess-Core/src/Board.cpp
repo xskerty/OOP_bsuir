@@ -7,6 +7,7 @@
 #include "pieces/Bishop.h"
 #include "pieces/Queen.h"
 #include "pieces/King.h"
+#include <iostream>
 
 
 namespace chess {
@@ -27,20 +28,17 @@ namespace chess {
     }
 
     void Board::initializePieces() {
-        // Очистка доски
         for (auto& row : grid) {
             for (auto& square : row) {
                 square.reset();
             }
         }
 
-        // Расстановка пешек
         for (int x = 0; x < BOARD_SIZE; ++x) {
             grid[1][x] = std::make_unique<Pawn>(Color::WHITE);
             grid[6][x] = std::make_unique<Pawn>(Color::BLACK);
         }
 
-        // Ладьи
         grid[0][0] = std::make_unique<Rook>(Color::WHITE);
         grid[0][7] = std::make_unique<Rook>(Color::WHITE);
         grid[7][0] = std::make_unique<Rook>(Color::BLACK);
@@ -58,11 +56,9 @@ namespace chess {
         grid[7][2] = std::make_unique<Bishop>(Color::BLACK);
         grid[7][5] = std::make_unique<Bishop>(Color::BLACK);
 
-        // Ферзи
         grid[0][3] = std::make_unique<Queen>(Color::WHITE);
         grid[7][3] = std::make_unique<Queen>(Color::BLACK);
 
-        // Короли
         grid[0][4] = std::make_unique<King>(Color::WHITE);
         grid[7][4] = std::make_unique<King>(Color::BLACK);
 
@@ -75,19 +71,20 @@ namespace chess {
         Piece* piece = getPiece(from);
         if (!piece || !isMoveLegal(from, to)) return false;
 
-        // Обработка специальных ходов
         if (piece->getType() == PieceType::KING && abs(from.x - to.x) == 2) {
-            handleCastling(from, to);
+            grid[to.y][to.x] = std::move(grid[from.y][from.x]);
+            piece->markAsMoved();
+            handleCastling(from, to); 
+            return true;
         }
         else {
             handleEnPassant(from, to);
+            std::cout << enPassantTarget.x << " " << enPassantTarget.y;
         }
 
-        // Основное перемещение фигуры
         grid[to.y][to.x] = std::move(grid[from.y][from.x]);
         piece->markAsMoved();
 
-        // Обработка превращения пешки
         if (piece->getType() == PieceType::PAWN && (to.y == 0 || to.y == 7)) {
             handlePromotion(to);
         }
@@ -102,20 +99,11 @@ namespace chess {
         const Piece* piece = getPiece(from);
         if (!piece) return false;
 
-        if (piece->getType() == PieceType::KING && abs(from.x - to.x) == 2) {
-            // Временная доска для проверки
-            Board tempBoard(*this);
-            int step = (to.x > from.x) ? 1 : -1;
 
-            // Проверяем каждую клетку пути короля
-            for (int x = from.x; x != to.x + step; x += step) {
-                if (x != from.x && tempBoard.isSquareAttacked(Position(x, from.y), piece->getColor())) {
-                    return false;
-                }
-            }
+        if (piece->getType() == PieceType::PAWN && abs(from.x - to.x) == 1 && abs(from.y - to.y) == 1 && to == enPassantTarget) {
+            return true;
         }
 
-        // 1. Проверка базовых правил перемещения фигуры
         const Piece* targetPiece = getPiece(to);
         bool isCapture = targetPiece && targetPiece->getColor() != piece->getColor();
 
@@ -123,7 +111,6 @@ namespace chess {
             return false;
         }
 
-        // 2. Проверка блокировки пути (кроме коня)
         if (piece->getType() != PieceType::KNIGHT) {
             auto path = piece->getPath(from, to);
             for (const auto& pos : path) {
@@ -133,7 +120,6 @@ namespace chess {
             }
         }
 
-        // 3. Проверка на шах после хода
         if (wouldBeCheck(from, to)) {
             return false;
         }
@@ -238,12 +224,11 @@ namespace chess {
     void Board::handleEnPassant(const Position& from, const Position& to) {
         Piece* piece = getPiece(from);
         if (piece->getType() == PieceType::PAWN &&
-            std::abs(from.y - to.y) == 2) { // Двойной ход пешки
+            std::abs(from.y - to.y) == 2) {
             enPassantTarget = Position(from.x, (from.y + to.y) / 2);
         }
         else if (to == enPassantTarget &&
             piece->getType() == PieceType::PAWN) {
-            // Взятие на проходе
             int capturedPawnY = piece->getColor() == Color::WHITE ? to.y - 1 : to.y + 1;
             grid[capturedPawnY][to.x].reset();
         }
@@ -253,40 +238,14 @@ namespace chess {
     }
 
     void Board::handleCastling(const Position& from, const Position& to) {
-        Piece* king = getPiece(from);
-        if (!king || king->getType() != PieceType::KING || king->hasPieceMoved()) {
-            return;
-        }
+        bool isKingside = (to.x > from.x);
+        int rookStartX = isKingside ? 7 : 0;
+        int rookNewX = isKingside ? 5 : 3;
 
-        int dx = to.x - from.x;
-        if (abs(dx) != 2 || from.y != to.y) {
-            return;
-        }
+        Position rookPos(rookStartX, from.y);
+        Position newRookPos(rookNewX, from.y);
 
-        bool isKingside = (dx > 0);
-        int rookX = isKingside ? 7 : 0;
-        int newRookX = isKingside ? 5 : 3;
-
-        Position rookPos(rookX, from.y);
-        Piece* rook = getPiece(rookPos);
-        if (!rook || rook->getType() != PieceType::ROOK || rook->hasPieceMoved()) {
-            return;
-        }
-
-        int step = isKingside ? 1 : -1;
-        for (int x = from.x + step; x != rookX; x += step) {
-            if (getPiece(Position(x, from.y))) {
-                return;
-            }
-        }
-
-        for (int x = from.x; x != to.x + step; x += step) {
-            if (isSquareAttacked(Position(x, from.y), king->getColor())) {
-                return;
-            }
-        }
-
-        Position newRookPos(newRookX, from.y);
+        // Перемещаем ладью
         grid[newRookPos.y][newRookPos.x] = std::move(grid[rookPos.y][rookPos.x]);
         grid[newRookPos.y][newRookPos.x]->markAsMoved();
     }
@@ -339,7 +298,7 @@ namespace chess {
 
         // Проверяем, что король не под шахом и не проходит через атакованные поля
         for (int x = kingX; x != kingX + (step * 2); x += step) {
-            if (isSquareAttacked(Position(x, row), color)) {
+            if (isSquareAttacked(Position(x, row), color==Color::WHITE ? Color::BLACK : Color::WHITE)) {
                 return false;
             }
         }
@@ -357,19 +316,16 @@ namespace chess {
             return false;
         }
 
-        // Проверяем, что целевая позиция совпадает с enPassantTarget
         if (targetPos != enPassantTarget) {
             return false;
         }
 
-        // Проверяем, что это взятие по диагонали
         int dx = abs(pawnPos.x - targetPos.x);
         int dy = abs(pawnPos.y - targetPos.y);
         if (dx != 1 || dy != 1) {
             return false;
         }
 
-        // Проверяем, что позади цели есть пешка противника
         int capturedPawnY = (pawn->getColor() == Color::WHITE) ? targetPos.y - 1 : targetPos.y + 1;
         const Piece* capturedPawn = getPiece(Position(targetPos.x, capturedPawnY));
         if (!capturedPawn ||

@@ -31,10 +31,6 @@ int main() {
         }
 
 
-        // Проверяем состояние
-
-        // Получаем текущую доску
-       // const chess::Board& board = game.getBoard().getGrid();
         char c = ' ';
         for (int i = 7; i >= 0; --i)
         {
