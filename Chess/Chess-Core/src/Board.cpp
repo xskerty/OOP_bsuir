@@ -7,7 +7,6 @@
 #include "pieces/Bishop.h"
 #include "pieces/Queen.h"
 #include "pieces/King.h"
-#include <iostream>
 
 
 namespace chess {
@@ -44,13 +43,11 @@ namespace chess {
         grid[7][0] = std::make_unique<Rook>(Color::BLACK);
         grid[7][7] = std::make_unique<Rook>(Color::BLACK);
 
-        // Кони
         grid[0][1] = std::make_unique<Knight>(Color::WHITE);
         grid[0][6] = std::make_unique<Knight>(Color::WHITE);
         grid[7][1] = std::make_unique<Knight>(Color::BLACK);
         grid[7][6] = std::make_unique<Knight>(Color::BLACK);
 
-        // Слоны
         grid[0][2] = std::make_unique<Bishop>(Color::WHITE);
         grid[0][5] = std::make_unique<Bishop>(Color::WHITE);
         grid[7][2] = std::make_unique<Bishop>(Color::BLACK);
@@ -79,7 +76,6 @@ namespace chess {
         }
         else {
             handleEnPassant(from, to);
-            std::cout << enPassantTarget.x << " " << enPassantTarget.y;
         }
 
         grid[to.y][to.x] = std::move(grid[from.y][from.x]);
@@ -152,7 +148,6 @@ namespace chess {
                 if (piece && piece->getColor() == attackerColor) {
                     Position attackerPos(x, y);
                     if (piece->isValidMove(attackerPos, pos, true)) {
-                        // Для фигур, кроме пешки, проверяем блокировку пути
                         if (piece->getType() != PieceType::PAWN &&
                             piece->getType() != PieceType::KNIGHT) {
                             auto path = piece->getPath(attackerPos, pos);
@@ -179,9 +174,8 @@ namespace chess {
     }
 
     bool Board::wouldBeCheck(const Position& from, const Position& to) const {
-        Board tempBoard(*this); // Копируем доску
+        Board tempBoard(*this);
         tempBoard.grid[to.y][to.x] = std::move(tempBoard.grid[from.y][from.x]);
-       // tempBoard.movePiece(from, to); // Делаем ход на копии
         return tempBoard.isCheck(getPiece(from)->getColor());
     }
 
@@ -245,17 +239,15 @@ namespace chess {
         Position rookPos(rookStartX, from.y);
         Position newRookPos(rookNewX, from.y);
 
-        // Перемещаем ладью
         grid[newRookPos.y][newRookPos.x] = std::move(grid[rookPos.y][rookPos.x]);
         grid[newRookPos.y][newRookPos.x]->markAsMoved();
     }
 
     bool Board::isStalemate(Color color) const {
         if (isCheck(color)) {
-            return false; // Шах - это не пат
+            return false; 
         }
 
-        // Проверяем, есть ли хотя бы один допустимый ход
         for (int y = 0; y < BOARD_SIZE; ++y) {
             for (int x = 0; x < BOARD_SIZE; ++x) {
                 const Piece* piece = grid[y][x].get();
@@ -263,13 +255,13 @@ namespace chess {
                     Position from(x, y);
                     auto moves = getLegalMoves(from);
                     if (!moves.empty()) {
-                        return false; // Найден допустимый ход
+                        return false; 
                     }
                 }
             }
         }
 
-        return true; // Нет допустимых ходов
+        return true; 
     }
 
     bool Board::canCastle(Color color, bool kingside) const {
@@ -278,7 +270,6 @@ namespace chess {
         int rookX = kingside ? 7 : 0;
         int step = kingside ? 1 : -1;
 
-        // Проверяем короля и ладью
         const Piece* king = grid[row][kingX].get();
         const Piece* rook = grid[row][rookX].get();
         if (!king || !rook ||
@@ -289,14 +280,12 @@ namespace chess {
             return false;
         }
 
-        // Проверяем путь между королем и ладьей
         for (int x = kingX + step; x != rookX; x += step) {
             if (grid[row][x]) {
-                return false; // Есть препятствия
+                return false;
             }
         }
 
-        // Проверяем, что король не под шахом и не проходит через атакованные поля
         for (int x = kingX; x != kingX + (step * 2); x += step) {
             if (isSquareAttacked(Position(x, row), color==Color::WHITE ? Color::BLACK : Color::WHITE)) {
                 return false;

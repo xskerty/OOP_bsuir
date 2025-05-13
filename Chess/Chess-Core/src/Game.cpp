@@ -136,21 +136,15 @@ namespace chess {
             oss += pieceTypeToSymbol(piece->getType());
         }
 
-        // Исходная позиция (если нужно для однозначности)
-        // (здесь можно добавить логику для неоднозначных ходов)
-
-        // Взятие
         if (board.getPiece(to)) {
             if (piece->getType() == PieceType::PAWN) {
-                oss += from.toChessNotation()[0]; // Буква колонки
+                oss += from.toChessNotation()[0]; 
             }
             oss += 'x';
         }
 
-        // Целевая позиция
         oss += to.toChessNotation();
 
-        // Превращение пешки
         if (promotion != PieceType::NONE) {
             oss += '=' << pieceTypeToSymbol(promotion);
         }
