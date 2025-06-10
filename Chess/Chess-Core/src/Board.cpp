@@ -68,7 +68,7 @@ namespace chess {
         Piece* piece = getPiece(from);
         if (!piece || !isMoveLegal(from, to)) return false;
 
-        if (piece->getType() == PieceType::KING && abs(from.x - to.x) == 2) {
+        if (piece->getType() == PieceType::KING && abs(from.x - to.x) == 2 && canCastle(piece->getColor(),(to.x > from.x))) {
             grid[to.y][to.x] = std::move(grid[from.y][from.x]);
             piece->markAsMoved();
             handleCastling(from, to); 
@@ -106,6 +106,8 @@ namespace chess {
         if (!piece->isValidMove(from, to, isCapture)) {
             return false;
         }
+
+        if(piece->getType()==PieceType::KING&& isCheck(piece->getColor()) &&abs(from.x-to.x) == 2) return false;
 
         if (piece->getType() != PieceType::KNIGHT) {
             auto path = piece->getPath(from, to);
@@ -281,7 +283,7 @@ namespace chess {
         }
 
         for (int x = kingX + step; x != rookX; x += step) {
-            if (grid[row][x]) {
+            if (grid[row][x].get()!=nullptr) {
                 return false;
             }
         }
